@@ -1,9 +1,10 @@
+#include "include/MainStateClass.hpp"
 #include <BaseStateClass.hpp>
 
 int main() {
 	TAGBaseState::initGame(TAGBaseState::GameInitializer(1280, 720, "My Awesome Game"));
-
-	// Include your game states here!
+	
+	TAGBaseState::addState<MainState>("MAIN");
 
 	return TAGBaseState::runGame();
 }
