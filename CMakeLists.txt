@@ -9,7 +9,7 @@ include(FetchContent)
 FetchContent_Declare(
     TAGEngine
     GIT_REPOSITORY https://github.com/ThouArtFish/ThouArtGame.git
-    GIT_TAG        v0.1.0
+    GIT_TAG        v0.1.1
 )
 FetchContent_MakeAvailable(TAGEngine)
 
