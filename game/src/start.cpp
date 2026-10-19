@@ -1,4 +1,4 @@
-#include "include/MainStateClass.hpp"
+#include "../include/MainStateClass.hpp"
 #include <BaseStateClass.hpp>
 
 int main() {

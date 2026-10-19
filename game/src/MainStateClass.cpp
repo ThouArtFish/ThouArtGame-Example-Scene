@@ -6,7 +6,7 @@ MainState::MainState() {
 	camera_position = stable_position;
 
 	// Create paintings
-	glm::vec3 stand = glm::vec3(0, -images.getMesh("flat_man").mesh_bb.min.y * 2.0f, 0);
+	glm::vec3 stand = glm::vec3(0, -images.getMesh("flat_man").getBoundingBox().min.y * 2.0f, 0);
 	images.setInstance(
 		{
 			.position = stand,
@@ -15,7 +15,7 @@ MainState::MainState() {
 		-1,
 		"flat_man"
 	);
-	stand = glm::vec3(0, -images.getMesh("pineapple").mesh_bb.min.y * 3.0f, 0);
+	stand = glm::vec3(0, -images.getMesh("pineapple").getBoundingBox().min.y * 3.0f, 0);
 	images.setInstance(
 		{
 			.position = glm::vec3(4.0f, 0.0f, 0.0f) + stand,
@@ -34,7 +34,7 @@ MainState::MainState() {
 	);
 
 	// Place lamp
-	lamp_pos = glm::vec3(0, -lamp.getMesh("lampion").mesh_bb.min.y * 0.01f, -3.0f);
+	lamp_pos = glm::vec3(0, -lamp.getMesh("lampion").getBoundingBox().min.y * 0.01f, -3.0f);
 
 	// Create lights
 	point_lights.setLight({ lamp_pos + glm::vec3(0.0f, 0.5f, 0.0f), lamp_light, lamp_light_atten });
@@ -42,10 +42,6 @@ MainState::MainState() {
 
 	flash_lights.setLight({ camera_position, camera_direction, player_light, player_light_atten, glm::radians(30.0f)});
 	flash_lights.bindToShader();
-
-	// Set scene data
-	point_lights.setScene({ .ambience = 0.1f });
-	point_lights.bindSceneToShader();
 	
 	// Set perspective matrix
 	setPerspectiveMatrix();
@@ -65,7 +61,9 @@ std::string MainState::mainLoop() {
 	const glm::vec3 spine = camera_up * camera_height;
 	const glm::vec3 foot = stable_position - spine;
 	std::vector<Collision::Info> all_collisions = playground.capsuleCollision<Collision::ALL>(foot, spine, capsule_rad);
-	grounded = !all_collisions.empty();
+	grounded = std::any_of(all_collisions.begin(), all_collisions.end(), [&](const Collision::Info& coll) {
+		return glm::dot(coll.collision_plane.normal, solver.grav_dir) < 0.0f;
+	});
 
 	// Check inputs
 	const glm::vec3 input_vel = processInput();
@@ -119,9 +117,11 @@ std::string MainState::mainLoop() {
 
 	// Draw all objects using the correct shaders
 	TAGShaderManager::Shader shader = shaders.useShader("uninstanced");
+	shader.set<float>(TAGShaderManager::default_options.ambience, ambience);
 	lamp.drawOne(shader, { .position = lamp_pos, .scale = 0.01f });
 
 	shader = shaders.useShader("instanced");
+	shader.set<float>(TAGShaderManager::default_options.ambience, ambience);
 	playground.drawAll(shader);
 	for (const std::string& mesh_name : images.getMeshNames()) {
 		TAGShaderManager::default_options.cull_backface = (mesh_name == "flat_man");

@@ -34,6 +34,7 @@ private:
 	const float capsule_rad = 0.8f;
 	const float jump_accel = 200.0f;
 	const float jump_duration = 0.1f;
+	const float ambience = 0.1f;
 	const glm::vec2 player_light_atten = { 0.0f, 0.02f };
 	const glm::vec2 lamp_light_atten = { 0.0f, 0.02f };
 	const glm::vec3 player_light = { 1.0f, 1.0f, 1.0f };
@@ -64,7 +65,10 @@ private:
 		TAGMesh::Material()
 	);
 
-	TAGSkybox skybox = TAGSkybox("skybox/", { TAGTexParam::CLAMP_TO_EDGE_TEX, TAGTexParam::LINEAR_INTERP_PIX, TAGTexParam::LINEAR_INTERP_PIX, false, false });
+	TAGSkybox skybox = TAGSkybox(
+		{ "skybox/right.jpg", "skybox/left.jpg", "skybox/top.jpg", "skybox/bottom.jpg", "skybox/front.jpg", "skybox/back.jpg" },
+		{ TAGTexParam::CLAMP_TO_EDGE_TEX, TAGTexParam::LINEAR_INTERP_PIX, TAGTexParam::LINEAR_INTERP_PIX, false, false }
+	);
 
 
 	TAGModel lamp = TAGModel(model_params, TAGResourceManager::BufferAccess::STATIC, "lamp.txt");

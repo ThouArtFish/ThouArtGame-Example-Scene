@@ -43,8 +43,8 @@ public:
 
 			for (const glm::vec3& normal : normals) {
 				const float vel_dot = glm::dot(normal, final_vel);
-
-				if (vel_dot < 0.0f || (i == 0 && vel_dot < 0.0001f)) {
+				const bool could_friction = (i == 0 && vel_dot < 0.0001f && glm::dot(normal, grav_dir) < 0.0f);
+				if (vel_dot < 0.0f || could_friction) {
 					clipping = true;
 				}
 				else {
@@ -57,7 +57,7 @@ public:
 
 				// Apply friction 
 				const float para_length = glm::length(para_comp);
-				if (para_length > 0.0001f && i == 0) {
+				if (para_length > 0.0001f && could_friction) {
 					para_comp -= (para_comp / para_length) * glm::min(para_length, glm::max(0.0f, -glm::dot(grav_dir * grav_accel * dt, normal) * friction));
 				}
 
