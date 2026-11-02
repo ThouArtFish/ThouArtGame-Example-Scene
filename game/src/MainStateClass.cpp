@@ -1,6 +1,13 @@
 #include "../include/MainStateClass.hpp"
 
 MainState::MainState() {
+	// Compile shaders
+	shaders.addShader<ProgramType::Default>({
+		{ "instanced", "", TAGShaderManager::DefaultProgramType::INSTANCED_MODEL_DRAW },
+		{ "uninstanced", "", TAGShaderManager::DefaultProgramType::UNINSTANCED_MODEL_DRAW },
+		{ "skybox", "", TAGShaderManager::DefaultProgramType::SKYBOX_DRAW }
+	});
+
 	//Set camera position
 	stable_position = camera_up * (capsule_rad + camera_height) + glm::vec3(0.0f, 15.0f, 0.0f);
 	camera_position = stable_position;
@@ -79,9 +86,11 @@ std::string MainState::mainLoop() {
 	camera_velocity = solver.calculateVelocity(dt, all_collisions, input_vel + last_vel, jump);
 
 	// Rotate the man
-	for (const TAGModel::Object& obj : images.getAllInstances("flat_man")) {
-		images.setInstance(TAGPaintingModel::faceDirec(stable_position, obj, true), 0, "flat_man");
-	}
+	glm::vec3 man_dir = stable_position - images.getInstance(0, "flat_man").position;
+	man_dir.y = 0.0f;
+	const glm::vec4 axis_and_angle = TAGUtil::pointDirection(glm::normalize(man_dir), glm::vec3(0.0f, 0.0f, 1.0f));
+	images.setInstanceMember<ObjectMemberName::ROTATION_AXIS>(glm::vec3(axis_and_angle), 0, "flat_man");
+	images.setInstanceMember<ObjectMemberName::ANGLE>(axis_and_angle.w, 0, "flat_man");
 
 	// Bounce while running
 	glm::vec3 bounce = glm::vec3(0);

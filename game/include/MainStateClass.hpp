@@ -52,11 +52,7 @@ private:
 	TAGLightManager<TAGLight::Point> point_lights = TAGLightManager<TAGLight::Point>(TAGResourceManager::BufferAccess::STATIC, 1);
 	TAGLightManager<TAGLight::Flash> flash_lights = TAGLightManager<TAGLight::Flash>(TAGResourceManager::BufferAccess::STREAM, 1);
 
-	TAGShaderManager shaders = TAGShaderManager({
-		{ .name = "instanced", .shader_type = TAGShaderManager::ShaderType::INSTANCED_MODEL_DRAW },
-		{ .name = "uninstanced", .shader_type = TAGShaderManager::ShaderType::UNINSTANCED_MODEL_DRAW },
-		{ .name = "skybox", .shader_type = TAGShaderManager::ShaderType::SKYBOX_DRAW }
-	});
+	TAGShaderManager shaders{};
 
 	TAGPaintingModel images = TAGPaintingModel(
 		{ "images/flat_man.png", "images/pineapple.png" },
